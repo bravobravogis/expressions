@@ -1,5 +1,5 @@
 ## Description: Label expression builds data dictionary with arcpy.da.SearchCursor
-## Label Type:  Multiple analytes, multiple depths (PG&E)    
+## Label Type:  Multiple analytes, single date, first depth interval (PG&E)    
 ## Notes:       IS based upon EQuIS flat file analytical results spreadsheet
 ##              Must add number (1, 2, 3, ...) before analyte name in spreadsheet corresponding to sort order
 ##              Must adjust end depth in results query to isolate first depth interval
