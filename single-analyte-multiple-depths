@@ -1,7 +1,8 @@
-## Description:  Label expression builds data dictionary with arcpy.da.SearchCursor
-## Label Type:   Single analyte, multiple depths     
-## Notes:        Values exceeding threshold value in BOLD
-##               Does NOT include values for field duplicates
+## Description: Label expression builds data dictionary with arcpy.da.SearchCursor
+## Label Type:  Single analyte, multiple depths     
+## Notes:       IS based on EQuIS analytical results flat file
+##              Values exceeding threshold value in BOLD
+##              Does NOT include values for field duplicates
 
 label_dict = {}  # preliminary empty data dictionary
 def FindLabel ( [loc_id] ):  # field to be joined to data dictionary
