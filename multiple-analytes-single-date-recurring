@@ -1,0 +1,41 @@
+## Description: 
+## Label Type: Multiple analytes (TPH), single recurring sampling date, sorted
+## Notes: 
+
+label_dict = {}  # preliminary empty data dictionary
+def FindLabel ( [sys_sample_code] ):  # field to be joined to data dictionary
+    
+    global label_dict  # define global variable
+    label_source = r"\\haleyaldrich.com\share\oak_common\40795_Mission_Clay\Global\GIS\Data\Tables\Monitoring\L1016334_FlatFile_for-Ian.xlsx\GIS$"  # provide location of analytical results spreadsheet
+    label_fields = ["sys_loc_code", "chemical_name", "sample_date", "result_text", "result_numeric", "detect_flag", "method_detection_limit"]  # relevant fields from analytical results spreadsheet
+    results_query = "chemical_name LIKE 'Total%' AND sample_type_code = 'N'"  # selects analyte and eliminates non-detects
+    
+    if not any(label_dict):  # populates data dictionary only if empty
+        with arcpy.da.SearchCursor(label_source, label_fields, results_query) as label_table:
+            for label_row in label_table:
+                label_id = label_row[0]  # assigns the key to data dictionary
+                if label_id not in label_dict:
+                    label_dict[label_id] = [label_row[1:]]  # assigns the list of values to the key
+                else:
+                    label_dict[label_id] += [label_row[1:]]  # appends the list of values to the key
+
+    sample_id = [sys_sample_code]  # field to be labeled
+    col_1 = "CHEMICAL"  # label column headers
+    expression = ""  # preliminary empty label expression
+    ns = "NOT SAMPLED (NS)"  # label for samples not collected
+    
+    if sample_id in label_dict.keys():  # determines whether the feature is in the data dictionary
+        sorted_label = sorted(label_dict[sample_id])  # sorts the data dictionary values for key based on chemical name
+        header_text = "<BOL>{0:<16}</BOL>\r\n<UND>{1:<16}<ITA>{2:<10}</ITA></UND>".format(sample_id, col_1, label_dict[sample_id][0][1])  # assembles the label header (id, chemical, date)
+        for row in sorted_label:
+            if row[4] == 'N':  # format non-detects based on method detection limit
+                expression += "\r\n{0:<16}{1:<8}".format(row[0].replace("Total Petroleum Hydrocarbons","TPH"), ("&lt; " + row[5]))
+            elif row[3] > 100:  # designate exceedance threshold
+                expression += "\r\n{0:<16}<BOL>{1:<8,}</BOL>".format(row[0].replace("Total Petroleum Hydrocarbons","TPH"), int(row[2]))  # builds label from data dictionary values
+            else:  # standard detection format
+                expression += "\r\n{0:<16}{1:<8}".format(row[0].replace("Total Petroleum Hydrocarbons","TPH"), row[2])  # builds label from data dictionary values
+    else:
+        header_text = "<UND><BOL>{0:<16}</BOL></UND>{1:<16}{2:<}</UND>".format(sample_id)  # assembles the label header
+        expression = "\r\n{0:<}".format(ns)  # adds message for samples not collected
+
+    return header_text + expression
