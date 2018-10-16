@@ -1,6 +1,8 @@
-## Description: 
-## Label Type: Multiple analytes (TPH), single recurring sampling date, sorted
-## Notes: 
+## Description: Label expression builds data dictionary with arcpy.da.SearchCursor
+## Label Type:  Multiple analytes (TPH), single recurring sampling date
+## Notes:       IS based upon EQuIS flat file analytical results spreadsheet
+##              Does NOT include values for field duplicates
+##              Includes BOLD exceedance values
 
 label_dict = {}  # preliminary empty data dictionary
 def FindLabel ( [sys_sample_code] ):  # field to be joined to data dictionary
