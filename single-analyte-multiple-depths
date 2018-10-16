@@ -1,0 +1,40 @@
+## Description:  Label expression builds data dictionary with arcpy.da.SearchCursor
+## Label Type:   Single analyte, multiple depths     
+## Notes:        Values exceeding threshold value in BOLD
+##               Does NOT include values for field duplicates
+
+label_dict = {}  # preliminary empty data dictionary
+def FindLabel ( [loc_id] ):  # field to be joined to data dictionary
+    
+    global label_dict  # define global variable
+    label_source = r"G:\36970_PGE_North_Beach_MGP\Global\GIS\Data\Tables\2018_10\0459003_SO_BaP_FlatFile_101218.xlsx\GIS$"  # provide location of analytical results spreadsheet
+    label_fields = ["sys_loc_code", "end_depth", "loc_name", "sample_date", "chemical_name", "result_text", "result_numeric"]  # relevant fields from analytical results spreadsheet
+    results_query = "chemical_name = 'Benzo(A)Pyrene Equivalent (1/2 RL substituted for ND)' AND sample_type_code = 'N'"  # selects analyte and eliminates duplicates
+    
+    if not any(label_dict):  # populates data dictionary only if empty
+        with arcpy.da.SearchCursor(label_source, label_fields, results_query) as label_table:
+            for label_row in label_table:
+                label_id = label_row[0]  # assigns the key to data dictionary
+                if label_id not in label_dict:
+                    label_dict[label_id] = [label_row[1:]]  # assigns the list of values to the key
+                else:
+                    label_dict[label_id] += [label_row[1:]]  # appends the list of values to the key
+
+    sample_id = [loc_id]  # field to be labeled
+    col_1, col_2 = "DEPTH", "B(a)P EQ  "  # label column headers
+    expression = ""  # preliminary empty label expression
+    ns = "NOT SAMPLED (NS)"  # non-detect label
+    
+    if sample_id in label_dict.keys():  # determines whether the feature is in the data dictionary
+        sorted_label = sorted(label_dict[sample_id])  # sorts the data dictionary values for key based on end depth
+        header_text = "{0:<16}<ITA>{1:<}</ITA>\r\n<UND>{2:<16}{3:<}</UND>".format(sample_id, label_dict[sample_id][0][2], col_1, col_2)  # assembles the label header
+        for row in sorted_label:
+            if float(row[5]) > 0.9:  # designate exceedance threshold for BaP EQ
+                expression += "\r\n{0:<16}<BOL>{1:<6}</BOL>".format(row[0], row[4])  # builds label for exceedance values
+            else:
+                expression += "\r\n{0:<16}{1:<6}".format(row[0], row[4])  # builds label for non-exceedance values
+    else:
+        header_text = "{0:<16}\r\n<UND>{1:<16}{2:<}</UND>".format(sample_id, col_1, col_2)  # assembles the label header
+        expression = "\r\n{0}".format(ns)  # adds not sampled message
+
+    return header_text + expression
