@@ -1,7 +1,8 @@
 ## Description: Label expression builds data dictionary with arcpy.da.SearchCursor
 ## Label Type:  Multiple analytes, single date, first depth interval (PG&E)    
 ## Notes:       IS based upon EQuIS flat file analytical results spreadsheet
-##              Must add number (1, 2, 3, ...) before analyte name in spreadsheet corresponding to sort order
+##              Must add number before analyte name corresponding to sort order (1Benzene, 2Ethylbenzene, ...) in chemical_name field in analytical results spreadsheet
+##              Must replace '< ' with '&lt;' in Result_Qualifer field in analytical results spreadsheet
 ##              Must adjust end depth in results query to isolate first depth interval
 ##              Does NOT include values for field duplicates
 ##              Includes BOLD exceedance values
