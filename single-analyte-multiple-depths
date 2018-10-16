@@ -1,5 +1,5 @@
 ## Description: Label expression builds data dictionary with arcpy.da.SearchCursor
-## Label Type:  Single analyte, multiple depths (PG&E)    
+## Label Type:  Single analyte, single date, multiple depths (PG&E)    
 ## Notes:       IS based on EQuIS flat file analytical results spreadsheet
 ##              Values exceeding threshold value in BOLD
 ##              Does NOT include values for field duplicates
