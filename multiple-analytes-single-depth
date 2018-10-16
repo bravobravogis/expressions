@@ -1,0 +1,53 @@
+## Description: Label expression builds data dictionary with arcpy.da.SearchCursor
+## Label Type:  Multiple analytes, multiple depths (PG&E)    
+## Notes:       IS based upon EQuIS flat file analytical results spreadsheet
+##              Must add number (1, 2, 3, ...) before analyte name in spreadsheet corresponding to sort order
+##              Must adjust end depth in results query to isolate first depth interval
+##              Does NOT include values for field duplicates
+##              Includes BOLD exceedance values
+
+label_dict = {}  # preliminary empty data dictionary
+def FindLabel ( [loc_id] ):  # field to be joined to data dictionary
+    
+    global label_dict  # define global variable
+    label_source = r"\\haleyaldrich.com\share\oak_common\36970_PGE_North_Beach_MGP\Global\GIS\Data\Tables\APN 0460A001B_SubSlab_FlatFile_D1.xlsx\GIS$"  # provide location of analytical results spreadsheet
+    label_fields = ["sys_loc_code", "chemical_name", "sample_date", "end_depth", "Result_Qualifier", "result_numeric"]  # relevant fields from analytical results spreadsheet
+    results_query = "(chemical_name = '1Benzene' OR chemical_name = '2Ethylbenzene' OR chemical_name = '3Toluene' OR chemical_name = '4m,p-Xylenes' OR chemical_name = '5o-Xylene' OR chemical_name = '6Naphthalene') AND (end_depth < 10) AND sample_type_code = 'N'"  # selects analyte and eliminates non-detects
+
+    if not any(label_dict):  # populates data dictionary only if empty
+        with arcpy.da.SearchCursor(label_source, label_fields, results_query) as label_table:
+            for label_row in label_table:
+                label_id = label_row[0]  # assigns the key to data dictionary
+                if label_id not in label_dict:
+                    label_dict[label_id] = [label_row[1:]]  # assigns the list of values to the key
+                else:
+                    label_dict[label_id] += [label_row[1:]]  # appends the list of values to the key
+
+    sample_id = [loc_id]  # field to be labeled
+    col_1, col_2 = "CHEMICAL", "DEPTH: "  # label column headers
+    expression = ""  # preliminary empty label expression
+    ns = "NOT SAMPLED (NS)"  # not sampled label
+    
+    if sample_id in label_dict.keys():  # determines whether the feature is in the data dictionary
+        sorted_label = sorted(label_dict[sample_id])  # sorts the data dictionary values for key based on end depth
+        header_text = "{0:<16}<ITA>{1:<}</ITA>\r\n<UND>{2:<16}{3:<}{4:<}</UND>".format(sample_id, label_dict[sample_id][0][1], col_1, col_2, label_dict[sample_id][0][2])  # assembles the label header
+        for row in sorted_label:
+            if row[0] == '1Benzene' and row[4] > 49:
+                expression += "\r\n{0:<16}<BOL>{1:<6}</BOL>".format("BENZENE", row[3])  # builds label from data dictionary values
+            elif row[0] == '2Ethylbenzene' and row[4] > 550:
+                expression += "\r\n{0:<16}<BOL>{1:<6}</BOL>".format("ETHYLBENZENE", row[3])  # builds label from data dictionary values
+            elif row[0] == '3Toluene' and row[4] > 155000:
+                expression += "\r\n{0:<16}<BOL>{1:<6}</BOL>".format("TOLUENE", row[3])  # builds label from data dictionary values
+            elif row[0] == '4m/p-Xylene' and row[4] > 50000:
+                expression += "\r\n{0:<16}<BOL>{1:<6}</BOL>".format("M,P-XYLENES", row[3])  # builds label from data dictionary values
+            elif row[0] == '5o-Xylene' and row[4] > 50000:
+                expression += "\r\n{0:<16}<BOL>{1:<6}</BOL>".format("O-XYLENE", row[3])  # builds label from data dictionary values
+            elif row[0] == '6Naphthalene' and row[4] > 42:
+                expression += "\r\n{0:<16}<BOL>{1:<6}</BOL>".format("NAPHTHALENE", row[3])  # builds label from data dictionary values
+            else:
+                expression += "\r\n{0:<16}{1:<6}".format(row[0].upper()[1:], row[3])  # builds label from data dictionary values
+    else:
+        header_text = "<UND>{0:<16}</UND>".format(sample_id)  # assembles the label header
+        expression = "\r\n{0}".format(ns)  # adds not sampled message
+
+    return header_text + expression
