@@ -7,10 +7,10 @@ A collection of label expressions designed to simplify routine labeling efforts,
 There are currently four (4) label expressions, grouped as follows:
 
 1. Tabular Labels (Data Box)  
-  +** multiple-analytes-multiple-depths **: data box with multiple analytes, multiple depths  
-  +** multiple-analytes-single-date-recurring **: data box with multiple analytes, single date
-  +** multiple-analytes-single-depth **: data box with multiple analytes, single depth  
-  +** single-analyte-multiple-depths **: data box with single analyte, multiple depths
+  +**multiple-analytes-multiple-depths**: data box with multiple analytes, multiple depths  
+  +**multiple-analytes-single-date-recurring**: data box with multiple analytes, single date
+  +**multiple-analytes-single-depth**: data box with multiple analytes, single depth  
+  +**single-analyte-multiple-depths**: data box with single analyte, multiple depths
 
 2. Stacked Labels (Standard)  
   +**gw-elev**: label with colored groundwater elevation beneath sample ID  
