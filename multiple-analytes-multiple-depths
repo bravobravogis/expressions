@@ -9,7 +9,7 @@ def FindLabel ( [loc_id] ):  # field to be joined to data dictionary
 
     global label_dict  # define global variable
     label_source = r"G:\37702_CTS_Printex\Global\GIS\Data\Tables\2018_04\CTS_Printex_GW_Results_2018_0416.xlsx\GIS$"  # provide location of analytical results spreadsheet
-    label_fields = ["loc_id", "start_depth", "end_depth", "tce_conc", "cdce_conc"]  # relevant fields from analytical results spreadsheet
+    label_fields = ["loc_id", "start_depth", "end_depth", "tce_conc_text", "tce_conc_result", "cdce_conc_text", "cdce_conc_result"]  # relevant fields from analytical results spreadsheet
 
     if not any(label_dict):  # populates data dictionary only if empty
         with arcpy.da.SearchCursor(label_source, label_fields) as label_table:
@@ -28,8 +28,15 @@ def FindLabel ( [loc_id] ):  # field to be joined to data dictionary
     if sample_id in label_dict.keys():  # determines whether the feature is in the data dictionary
         sorted_label = sorted(label_dict[sample_id])  # sorts the data dictionary values for key based on start depth
         header_text = "<BOL>{0:<}</BOL>\r\n<UND>{1:<12}{2:<14}{3:<6}</UND>".format(sample_id, col_1, col_2, col_3)  # assembles the label header
-        for row in sorted_label:
-            expression += "\r\n{0:<}-{1:<7}{2:<14}{3:<}".format(row[0], row[1], row[2], row[3])  # builds label from data dictionary values
+        for row in sorted_label:  # checks results against California MCLs for TCE and cDCE
+            if float(row[3]) > 5.0 and float(row[5]) > 6.0:
+                expression += "\r\n{0:<}-{1:<7}<BOL>{2:<14}{3:<}</BOL>".format(row[0], row[1], row[2], row[4])  # builds exceedance label from data dictionary values
+            elif float(row[3]) > 5.0:
+                expression += "\r\n{0:<}-{1:<7}<BOL>{2:<14}</BOL>{3:<}".format(row[0], row[1], row[2], row[4])  # builds exceedance label from data dictionary values
+            elif float(row[5]) > 6.0:
+                expression += "\r\n{0:<}-{1:<7}{2:<14}<BOL>{3:<}</BOL>".format(row[0], row[1], row[2], row[4])  # builds exceedance label from data dictionary values
+            else:
+                expression += "\r\n{0:<}-{1:<7}{2:<14}{3:<}".format(row[0], row[1], row[2], row[4])  # builds label from data dictionary values
     else:
         header_text = "<BOL>{0:<}</BOL>\r\n<UND>{1:<12}{2:<14}{3:<6}</UND>".format(sample_id, col_1, col_2, col_3)  # assembles the label header
         expression = "\r\n{0}".format(ns)  # adds not sampled message
