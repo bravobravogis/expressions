@@ -2,7 +2,7 @@
 ## Label Type:  Multiple analytes, multiple depths     
 ## Notes:       Is NOT based upon EQuIS flat file analytical results spreadsheet
 ##              Does NOT include values for field duplicates
-##              Does NOT include BOLD exceedance values
+##              Includes BOLD exceedance values
 
 label_dict = {}  # preliminary empty data dictionary
 def FindLabel ( [loc_id] ):  # field to be joined to data dictionary
