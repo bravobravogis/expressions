@@ -2,21 +2,18 @@
 Python-based ArcGIS label expressions
 
 ## Synopsis
-A collection of functions designed to simplify routine mapping operations, from label expressions to feature class manipulation. Each can be applied during field calculations, label expressions, toolbox scripts, or from within the Python window itself.
+A collection of label expressions designed to simplify routine labeling efforts, primarily displaying analytical results for environmental sampling locations. Each must be applied from within the label expressions window, by selecting the advanced checkbox and then selecting Python as the parser.
 
 There are currently four (4) label expressions, grouped as follows:
 
-1. String Formatting  
-  +**clean_name**: format text to remove non-standard characters  
-  +**ac**: add color  
-  +**ab**: add bold  
-  +**ai**: add italics  
-  +**au**: add underline  
+1. Tabular Labels (Data Box)  
+  +** multiple-analytes-multiple-depths **: data box with multiple analytes, multiple depths  
+  +** multiple-analytes-single-date-recurring **: data box with multiple analytes, single date
+  +** multiple-analytes-single-depth **: data box with multiple analytes, single depth  
+  +** single-analyte-multiple-depths **: data box with single analyte, multiple depths
 
-2. Feature Class Modification  
-  +**add_fields_point**: add fields to point feature class  
-  +**add_fields_line**: add fields to line feature class  
-  +**add_fields_poly**: add fields to polygon feature class  
+2. Stacked Labels (Standard)  
+  +**gw-elev**: label with colored groundwater elevation beneath sample ID  
 
 ## Motivation
 The ability to import a module, with a collection of custom functions, makes routine mapping activities more efficient. As with toolboxes, modules can be easily shared amongst members of an organization. Maps constructed using shared modules are consistent, and reliance upon Python will encourage further growth and learning.
@@ -28,4 +25,4 @@ Download the custom module and extract the .py file to the following folder:\
 _C:\Users\<user name>\AppData\Roaming\ESRI\Desktop<version number>\ArcToolbox\My Toolboxes_
 
 ## Contributors
-Ian Bruce (Haley & Aldrich, Inc.) is the sole contributor (as of *14 June 2018*).
+Ian Bruce (Haley & Aldrich, Inc.) is the sole contributor (as of *17 October 2018*).
