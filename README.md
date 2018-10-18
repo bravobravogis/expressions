@@ -1,4 +1,4 @@
-# ha-expressions
+# expressions
 Python-based ArcGIS label expressions
 
 ## Synopsis
